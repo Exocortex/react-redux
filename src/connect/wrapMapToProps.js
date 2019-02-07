@@ -39,11 +39,11 @@ export function getDependsOnOwnProps(mapToProps) {
 //    the developer that their mapToProps function is not returning a valid result.
 //
 export function wrapMapToPropsFunc(mapToProps, methodName) {
-  return function initProxySelector(dispatch, { displayName }) {
+  return function initProxySelector(dispatch, { displayName }, store) {
     const proxy = function mapToPropsProxy(stateOrDispatch, ownProps) {
       return proxy.dependsOnOwnProps
-        ? proxy.mapToProps(stateOrDispatch, ownProps)
-        : proxy.mapToProps(stateOrDispatch)
+        ? proxy.mapToProps(stateOrDispatch, ownProps, store)
+        : proxy.mapToProps(stateOrDispatch, null, store)
     }
 
     // allow detectFactoryAndVerify to get ownProps

@@ -4,12 +4,12 @@ export function impureFinalPropsSelectorFactory(
   mapStateToProps,
   mapDispatchToProps,
   mergeProps,
-  dispatch
+  store
 ) {
   return function impureFinalPropsSelector(state, ownProps) {
     return mergeProps(
-      mapStateToProps(state, ownProps),
-      mapDispatchToProps(dispatch, ownProps),
+      mapStateToProps(state, ownProps, store),
+      mapDispatchToProps(store.dispatch, ownProps),
       ownProps
     )
   }
@@ -19,7 +19,7 @@ export function pureFinalPropsSelectorFactory(
   mapStateToProps,
   mapDispatchToProps,
   mergeProps,
-  dispatch,
+  store,
   { areStatesEqual, areOwnPropsEqual, areStatePropsEqual }
 ) {
   let hasRunAtLeastOnce = false
@@ -32,18 +32,18 @@ export function pureFinalPropsSelectorFactory(
   function handleFirstCall(firstState, firstOwnProps) {
     state = firstState
     ownProps = firstOwnProps
-    stateProps = mapStateToProps(state, ownProps)
-    dispatchProps = mapDispatchToProps(dispatch, ownProps)
+    stateProps = mapStateToProps(state, ownProps, store)
+    dispatchProps = mapDispatchToProps(store.dispatch, ownProps)
     mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
     hasRunAtLeastOnce = true
     return mergedProps
   }
 
   function handleNewPropsAndNewState() {
-    stateProps = mapStateToProps(state, ownProps)
+    stateProps = mapStateToProps(state, ownProps, store)
 
     if (mapDispatchToProps.dependsOnOwnProps)
-      dispatchProps = mapDispatchToProps(dispatch, ownProps)
+      dispatchProps = mapDispatchToProps(store.dispatch, ownProps)
 
     mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
     return mergedProps
@@ -51,17 +51,17 @@ export function pureFinalPropsSelectorFactory(
 
   function handleNewProps() {
     if (mapStateToProps.dependsOnOwnProps)
-      stateProps = mapStateToProps(state, ownProps)
+      stateProps = mapStateToProps(state, ownProps, store)
 
     if (mapDispatchToProps.dependsOnOwnProps)
-      dispatchProps = mapDispatchToProps(dispatch, ownProps)
+      dispatchProps = mapDispatchToProps(store.dispatch, ownProps)
 
     mergedProps = mergeProps(stateProps, dispatchProps, ownProps)
     return mergedProps
   }
 
   function handleNewState() {
-    const nextStateProps = mapStateToProps(state, ownProps)
+    const nextStateProps = mapStateToProps(state, ownProps, store)
     const statePropsChanged = !areStatePropsEqual(nextStateProps, stateProps)
     stateProps = nextStateProps
 
@@ -98,12 +98,12 @@ export function pureFinalPropsSelectorFactory(
 // object and shouldComponentUpdate will always return true.
 
 export default function finalPropsSelectorFactory(
-  dispatch,
+  store,
   { initMapStateToProps, initMapDispatchToProps, initMergeProps, ...options }
 ) {
-  const mapStateToProps = initMapStateToProps(dispatch, options)
-  const mapDispatchToProps = initMapDispatchToProps(dispatch, options)
-  const mergeProps = initMergeProps(dispatch, options)
+  const mapStateToProps = initMapStateToProps(store.dispatch, options, store)
+  const mapDispatchToProps = initMapDispatchToProps(store.dispatch, options)
+  const mergeProps = initMergeProps(store.dispatch, options)
 
   if (process.env.NODE_ENV !== 'production') {
     verifySubselectors(
@@ -122,7 +122,7 @@ export default function finalPropsSelectorFactory(
     mapStateToProps,
     mapDispatchToProps,
     mergeProps,
-    dispatch,
+    store,
     options
   )
 }

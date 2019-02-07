@@ -149,10 +149,7 @@ export default function connectAdvanced(
         ) {
           lastStore = store
           lastSelectorFactoryOptions = selectorFactoryOptions
-          sourceSelector = selectorFactory(
-            store.dispatch,
-            selectorFactoryOptions
-          )
+          sourceSelector = selectorFactory(store, selectorFactoryOptions)
         }
 
         lastProps = props
