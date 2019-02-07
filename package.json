@@ -22,11 +22,12 @@
     "es"
   ],
   "scripts": {
+    "build:types": "cp index.d.ts dist/index.d.ts && cp index.d.ts es/index.d.ts && cp index.d.ts lib/index.d.ts",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "babel src --out-dir es",
     "build:umd": "cross-env NODE_ENV=development rollup -c -o dist/react-redux.js",
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -o dist/react-redux.min.js",
-    "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min && npm run build:types",
     "clean": "rimraf lib dist es coverage",
     "format": "prettier --write \"{src,test}/**/*.{js,ts}\" index.d.ts \"docs/**/*.md\"",
     "lint": "eslint src test/utils test/components",
